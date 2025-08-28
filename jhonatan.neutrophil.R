@@ -42,10 +42,10 @@ fcs
 fcs <- fcs[3:22]
 fs <- read.flowSet(fcs, transformation = F, truncate_max_range = F)
 
-#removing FCS, SSC, L/D, CTV and the extra CD62L
+#removing FCS, SSC, CTV and the extra CD62L
 all_cols <- colnames(fs)
 all_cols
-fs <- fs[,-c(1:4,7,19:20)]
+fs <- fs[,-c(1:4,7,20)]
 colnames(fs)
 #export remaining colnames to csv to create first of 2 metadata files needed for analysis (as I've done this analysis before I already have this excel so can skip)
 cols <- colnames(fs)
@@ -54,6 +54,12 @@ cols <- as.data.frame(cols)
 #write.csv(cols, file = "Marker.metadata.csv")
 markers <- read.csv("Marker.metadata.csv")
 markers
+
+ld <- data.frame(fluorophore = "Zombie-NIR-A", antigen = "Live_dead")
+
+markers <- rbind(markers,ld)
+markers
+
 #make sample metadata
 #save list of file names and then edit in excel and reload in
 names <- data.frame(fcs)
@@ -79,7 +85,8 @@ setdiff(fcs, samples$file_name)
 sce.custom <- prepData(x = fs, panel = markers, md = samples, FACS = T, transform = T, 
   cofactor = c("AF700-A" = 1000, "BUV563-A" = 1000, "BV421-A" = 3000,"BV510-A" = 2000, 
   "BV605-A" = 1000, "BV650-A" = 1000, "BV711-A" = 1000, "FITC-A" = 1000, "PE-A" = 1000, 
-  "PE-CF594-A" = 5000, "PE-Fire640-A" = 1000, "PerCP-Cy5.5-A" = 1000, "SparkUV-387-A" = 3000), 
+  "PE-CF594-A" = 5000, "PE-Fire640-A" = 1000, "PerCP-Cy5.5-A" = 1000, "SparkUV-387-A" = 3000,
+"Zombie-NIR-A" = 500), 
   panel_cols = list(channel = "fluorophore", antigen = "antigen"),
   md_cols = list(file = "file_name", id = "sample_id",
   factors = c("donor_id", "neut", "ratio")))
